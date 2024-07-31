@@ -31,11 +31,9 @@ User Function MVCAUTO()
 			Break
 		EndIf
 
-
 		If !oModelIB2:SetValue("IB2_CLI",Left(oJson['cliente'],nIAXCLI))
 			Break
 		EndIf
-
 
 		If oModelIB1:Length() == 0
 			cMessage := "Nenhum apontamento localizado para vincular a ordem de serviço"
