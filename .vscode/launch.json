@@ -7,12 +7,35 @@
 			"name": "TOTVS Language Debug",
 			"program": "${command:AskForProgramName}",
 			"cwb": "${workspaceFolder}",
-			"smartclientBin": "../totvs/bin/smartclient/smartclient.exe",
+			"smartclientBin": "C:\\TOTVS12_2310\\tec\\smartclient\\smartclient.exe",
 			"isMultiSession": true,
 			"enableTableSync": true,
 			"extendFeatures": {
 				"charDetails": false
 			}
 		}
-	]
+	],
+	"lastPrograms": [
+		{
+			"label": "sigacfg"
+		},
+		{
+			"label": "sigabpm 5, U_MVC01"
+		},
+		{
+			"args": [
+				"5",
+				"U_MVC01"
+			],
+			"label": "sigabpm "
+		},
+		{
+			"label": "sigaadv"
+		},
+		{
+			"label": "sigamdi"
+		}
+	],
+	"lastProgramExecuted": "sigamdi",
+	"lastProgramArguments": []
 }

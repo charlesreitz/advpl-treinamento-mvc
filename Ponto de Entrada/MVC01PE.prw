@@ -8,7 +8,7 @@ https://centraldeatendimento.totvs.com/hc/pt-br/articles/360000351188-Cross-Segm
 @author CHARLES REITZ
 @since 31/07/2023
 /*/
-User Function ITEM()
+User Function U_MVC01()
 	Local aParam     := PARAMIXB
 	Local xRet       := .T.
 	Local oObj       := ''

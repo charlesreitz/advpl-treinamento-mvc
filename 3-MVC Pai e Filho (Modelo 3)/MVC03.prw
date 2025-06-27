@@ -5,9 +5,13 @@ User Function MVC03()
 	Local oBrowse
 
 	oBrowse := FWMBrowse():New()
-	oBrowse:SetAlias('ZB5')
-	oBrowse:SetDescription('Cadastro de Turma x Aluno')
+	oBrowse:SetAlias('Z00')
+	oBrowse:SetDescription('Cadastro de Usuários e Observacoes')
+	oBrowse:AddLegend( "Z00_ADM", "GREEN", "Administrador" )
+	oBrowse:AddLegend( "!Z00_ADM", "YELLOW", "Usuário" )
+	oBrowse:SetMenuDef( 'MVC03' )
 	oBrowse:Activate()
+
 Return
 
 Static Function MenuDef()
@@ -15,100 +19,86 @@ Static Function MenuDef()
 
 	ADD OPTION aRotina TITLE 'Visualizar' ACTION 'VIEWDEF.MVC03' OPERATION 2 ACCESS 0
 	ADD OPTION aRotina TITLE 'Incluir'    ACTION 'VIEWDEF.MVC03' OPERATION 3 ACCESS 0
-	ADD OPTION aRotina TITLE 'Alterar'    ACTION 'VIEWDEF.MVC03' OPERATION 4 ACCESS 0
+	ADD OPTION aRotina TITLE 'Alterar'    ACTION 'VIEWDEF.MVC03' OPERATION MODEL_OPERATION_UPDATE ACCESS 0
 	ADD OPTION aRotina TITLE 'Excluir'    ACTION 'VIEWDEF.MVC03' OPERATION 5 ACCESS 0
 	ADD OPTION aRotina TITLE 'Imprimir'   ACTION 'VIEWDEF.MVC03' OPERATION 8 ACCESS 0
 	ADD OPTION aRotina TITLE 'Copiar'     ACTION 'VIEWDEF.MVC03' OPERATION 9 ACCESS 0
+	ADD OPTION aRotina TITLE 'Auto Incluir'     ACTION 'U_MVCAUTO()' OPERATION 2 ACCESS 0
 
 Return aRotina
-
 Static Function ModelDef()
 	Local oModel
-	Local oStruZB5 := FWFormStruct(1,"ZB5")
-	Local oStruZB6 := FWFormStruct(1,"ZB6")
+	Local oStruZ00 := FWFormStruct(1,"Z00")
+	Local oStruZ01 := FWFormStruct(1,"Z01")
 
-	oModel := MPFormModel():New("MD_TURMA_ALUNO")
-	oModel:SetDescription("Cadastro de Turma x Aluno")
+	// oStruZ00:RemoveField( 'Z00_OBS' )
+	// oStruZ00:SetProperty("Z00_OBS"		, MODEL_FIELD_TITULO, "COISA LINDA ")
+	// oStruZ00:SetProperty("Z00_OBS"		, MODEL_FIELD_OBRIGAT, .T.)
+	// oStruZ00:SetProperty("Z00_OBS"		, MODEL_FIELD_WHEN, .T.)
 
-	oModel:addFields('MASTERZB5',,oStruZB5,,{|oFieldZB5| TurmaPosValid(oFieldZB5)})
-	oModel:addGrid('DETAILZB6','MASTERZB5',oStruZB6,{|oGrid,nLine,cAction| LinePreAluno(oGrid,nLine,cAction)},{|oGrid| AlunoLinePos(oGrid)})
+	// oStruZ00:AddField( ;                      // Ord. Tipo Desc.
+	// "Valor Alimentação"        , ;      // [01]  C   Titulo do campo
+	// "Valor da despesa de alimentação para integrar com o gestão de despesa"     , ;      // [02]  C   ToolTip do campo
+	// 'DVAL_ALIME'                     , ;      // [03]  C   Id do Field
+	// "N"                             , ;      // [04]  C   Tipo do campo
+	// 10                                , ;      // [05]  N   Tamanho do campo
+	// 2                                , ;      // [06]  N   Decimal do campo
+	// {|| .T.  }                            , ;      // [07]  B   Code-block de validação do campo
+	// {|| IB2ValCabI() }                            , ;      // [08]  B   Code-block de validação When do campo
+	// NIL                              , ;      // [09]  A   Lista de valores permitido do campo
+	// .F.                              , ;      // [10]  L   Indica se o campo tem preenchimento obrigatório
+	// NIL, ;   // [11]  B   Code-block de inicializacao do campo
+	// NIL                              , ;      // [12]  L   Indica se trata-se de um campo chave
+	// NIL                              , ;      // [13]  L   Indica se o campo pode receber valor em uma operação de update.
+	// .T.                              )        // [14]  L   Indica se o campo é virtual
 
-	oModel:getModel('MASTERZB5'):SetDescription('Dados da Turma')
-	oModel:getModel('DETAILZB6'):SetDescription('Dados do Aluno')
+	oModel := FWFormModel():New("U_MVC03" )
 
-	oModel:SetRelation("DETAILZB6", ;
-		{{"ZB6_FILIAL",'xFilial("ZB6")'},;
-		{"ZB6_CODTUR","ZB5_CODTUR"  }}, ;
-		ZB6->(IndexKey(1)))
+	oModel:SetDescription("Cadastro de Usuários")
 
-	oModel:AddCalc( 'CALC_ALUNO', 'MASTERZB5', 'DETAILZB6', 'ZB6_RA', 'CALC_ALUNO', 'COUNT', /*bCondition*/, /*bInitValue*/,'Número de alunos da Turma' /*cTitle*/, /*bFormula*/)
+	oModel:addFields('Z00MASTER', /*cOwner*/, oStruZ00)
+	oModel:getModel('Z00MASTER'):SetDescription('Cadastro de Usuários master')
+	oModel:getModel('Z00MASTER'):SetPrimaryKey( { "Z00_FILIAL", "Z00_ID" } )
+
+	oModel:AddGrid( 'Z01DETAILS','Z00MASTER', oStruZ01)
+	oModel:GetModel( 'Z01DETAILS' ):SetDescription( 'Observacoes do usuario ' )
+
+	aReal := {}
+	aadd(aReal, {"Z00_FILIAL","Z01_FILIAL"})
+	aadd(aReal, {"Z00_ID","Z01_IDZ00"})
+
+	oModel:SetRelation("Z01DETAILS",aReal,Z01->(IndexKey(1)))
+	// oModel:GetModel("Z01DETAILS"):SetOnlyQuery(.T.)
+	// // oModel:GetModel("Z01DETAILS"):SetOnlyView(.T.)
+	// // oModel:GetModel("Z01DETAILS"):SetNoUpdateLine(.T.)
+	// oModel:GetModel("Z01DETAILS"):SetNoInsertLine(.T.)
+	// oModel:GetModel("Z01DETAILS"):SetNoDeleteLine(.T.)
+	oModel:GetModel('Z01DETAILS'):SetOptional(.T.)
+
+
 
 Return oModel
-
 Static Function ViewDef()
-	Local oModel := ModelDef()
+	Local oModel := ModelDef() //fWLoadMOdel("MVC03")
 	Local oView
-	Local oStrZB5:= FWFormStruct(2, 'ZB5')
-	Local oStrZB6:= FWFormStruct(2, 'ZB6', {|cField| AllTrim(Upper(cField)) $ "ZB6_RA" })
-	Local oStr2:= FWCalcStruct( oModel:GetModel('CALC_ALUNO') )
+	Local oStrZ00:= FWFormStruct(2, 'Z00')
+	Local oStrZ01:= FWFormStruct(2, 'Z01')
 
+	// oStrZ00:SetProperty( '*' , MVC_VIEW_GROUP_NUMBER, 'GRUPO01' )
 
 	oView := FWFormView():New()
 	oView:SetModel(oModel)
+	oView:AddField('FORM_Z00' , oStrZ00,'Z00MASTER' )
+	oView:AddGrid(  'GRID_Z01', oStrZ01, 'Z01DETAILS' )
 
-	oView:AddField('FORM_TURMA' , oStrZB5,'MASTERZB5' )
-	oView:AddGrid('FORM_ALUNOS' , oStrZB6,'DETAILZB6')
-	oView:AddField('CALC1', oStr2,'CALC_ALUNO')
+	// oView:SetNoDeleteLine('VIEW_IB1')
+	// oView:CanDeleteLine('VIEW_IB1')
+	// oView:SetNoInsertLine('VIEW_IB1')
+	// oView:CanUpdateLine('VIEW_IB1')
 
-	oView:CreateHorizontalBox( 'BOX_FORM_TURMA', 19)
-	oView:CreateHorizontalBox( 'BOX_FORM_ALUNOS', 44)
+	oView:CreateHorizontalBox( 'SUPERIOR'   , 40 )
+	oView:CreateHorizontalBox( 'INFERIOR', 60 )
 
-	oView:CreateHorizontalBox( 'BOX_CALCS', 37)
-	oView:CreateVerticalBox( 'BOX_CALC_ALUNO', 100, 'BOX_CALCS')
-
-	oView:SetOwnerView('CALC1','BOX_CALC_ALUNO')
-	oView:SetOwnerView('FORM_ALUNOS','BOX_FORM_ALUNOS')
-	oView:SetOwnerView('FORM_TURMA','BOX_FORM_TURMA')
-
-	oView:AddUserButton('Nova Turma','',{ || novaTurma()})
-
+	oView:SetOwnerView('FORM_Z00','SUPERIOR')
+	oView:SetOwnerView('GRID_Z01','INFERIOR')
 Return oView
-
-Static Function TurmaPosValid(oField)
-	Local lValid := .T.
-	Local cDescr := oField:GetValue("ZB5_DESTUR")
-
-	If "TURMA" $ Upper(cDescr)
-		Help( ,, 'HELP',, 'A descrição da turma não pode conter o nome "TURMA".', 1, 0)
-		lValid := .F.
-	EndIf
-
-Return lValid
-
-Static Function AlunoLinePos(oGrid)
-	Local lValid := .T.
-	Local cRA := oGrid:GetValue("ZB6_RA")
-
-	If IsAlpha(cRA)
-		Help( ,, 'HELP',, 'O RA do aluno não pode iniciar com uma letra.', 1, 0)
-		lValid := .F.
-	EndIf
-
-Return lValid
-
-Static Function LinePreAluno(oGrid,nLine,cAction)
-	Local lValid := .T.
-
-	If cAction == "UNDELETE"
-		Help( ,, 'HELP',, 'Não é possivel desfazer a deleção de um Aluno da turma.', 1, 0)
-		lValid := .F.
-	EndIf
-
-Return lValid
-
-Static Function novaTurma()
-	Local aButtons := {{.F.,Nil},{.F.,Nil},{.F.,Nil},{.T.,Nil},{.T.,Nil},{.T.,Nil},{.T.,"Salvar"},{.T.,"Cancelar"},{.T.,Nil},{.T.,Nil},{.T.,Nil},{.T.,Nil},{.T.,Nil},{.T.,Nil}}
-
-	FWExecView('Nova Turma','CMVC_01', MODEL_OPERATION_INSERT, , { || .T. }, , ,aButtons )
-
-Return

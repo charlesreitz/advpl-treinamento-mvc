@@ -1,0 +1,424 @@
+{
+	"LogMsg": {
+	  "prefix": "LogMsg",
+	  "body": [
+		"LogMsg(\"${2:/*Programa*/}\", 0, 6, 1, '', '', \"${1:/*Mensagem*/}\" )"
+	  ],
+	  "description": "LogMsg - Define um log de mensagens"
+	},
+	"Protheus doc": {
+	  "prefix": "protheusdoc",
+	  "body": [
+		"//-------------------------------------------------------------------",
+		"/*/{Protheus.doc} ${function}",
+		"${description}",
+		"@author  Charles Reitz",
+		"@Since   \"$CURRENT_DATE/$CURRENT_MONTH/$CURRENT_YEAR\"",
+		"/*/",
+		"//-------------------------------------------------------------------"
+	  ],
+	  "description": "Protheus doc"
+	},
+	"Protheus doc2": {
+	  "prefix": "protheusdoc2",
+	  "body": [
+		"//-------------------------------------------------------------------",
+		"/*/{Protheus.doc} ${function}",
+		"${description}",
+		"@version ${12.1.33}",
+		"@author  Charles Reitz",
+		"@Since   \"$CURRENT_DATE/$CURRENT_MONTH/$CURRENT_YEAR\"",
+		"@link   ${link-text}",
+		"@param  ${parameter1}, ${Type1}, ${description1}  ",
+		"@param  ${parameter2}, ${Type2}, ${description2}  ",
+		"@return ${return-type description}",
+		"/*/",
+		"//-------------------------------------------------------------------"
+	  ],
+	  "description": "Protheus doc"
+	},
+	"TamSX3": {
+	  "prefix": "TamSX3",
+	  "body": ["TamSX3(${1:/*cCampo*/})[${2:/*cParam*/}]"],
+	  "description": "Retorna o Tamanho/Decimal/Tipo de um Campo Informado cParam = 1:Tamanho/2:Decimal/3:Tipo "
+	},
+	"BeginSql": {
+	  "prefix": "BeginSql - Exemplo",
+	  "body": [
+		"\tLocal cAlias := GetNextAlias()",
+		"\t\tBeginSql Alias cAlias",
+		"\t\t\tSELECT B1_COD",
+		"\t\t\tFROM %Table:SB1% SB1",
+		"\t\t\t WHERE B1_FILIAL = %FWxFilial:SB1% ",
+		"\t\t\tAND SB1.%NotDel%",
+		"\t\t\tEndSql",
+		"\t\tWhile ! (cAlias)->(EoF())",
+		"\t\t\t(cAlias)->(DbSkip())",
+		"\t\tEndDo",
+		"\t\t(cAlias)->(DbCloseArea())"
+	  ],
+	  "description": "Exemplo BeginSQl "
+	},
+	"Query": {
+	  "prefix": "Query - snippet",
+	  "body": [
+		"\tcAlias := GetNextAlias()",
+		"\t\tcQuery := \" SELECT B1_COD, B1_DESC \" ",
+		"\t\tcQuery += \"  FROM \" + RetSqlName(\"SB1\") + \" SB1 \"",
+		"\t\tcQuery += \" WHERE \" + RetSqlCond(\"SB1\")  ",
+		"\t\tcQuery += \" ORDER BY B1_COD\" ",
+		"\t\tcQuery := ChangeQuery(cQuery)",
+		"\t\tMpSysOpenQuery(cQuery, cAlias)",
+		"\t\tWhile (cAlias)->(!Eof())",
+		"\t\t\t(cAlias)->(DbSkip())",
+		"\t\tEndDo",
+		"\t\t(cAlias)->(DbCloseArea())"
+	  ],
+	  "description": "Exemplo Query normal "
+	},
+	"x3uso": {
+	  "prefix": "X3uso",
+	  "body": ["X3Uso(GetSx3Cache('${1:/*cCampo*/}','X3_USADO'))"],
+	  "description": "Verifica se o campo esta marcado como Usado, retorno Logico"
+	},
+	"Help": {
+	  "prefix": "Help Advpl",
+	  "body": [
+		"Help(NIL, NIL, \"${1:/*Titulo*/}\", NIL, \"${2:/*Texto*/}\", 1, 0, NIL, NIL, NIL, NIL, NIL, {\"${3:/*Texto da Solução*/}\"})"
+	  ],
+	  "description": "Help padrao"
+	},
+	"Ascan": {
+	  "prefix": "Ascan - Exemplo",
+	  "body": [
+		"aScan(${1:/*array procurado*/},{|x|Alltrim(x[1]) == \" ${2:/*valor procurado*/}\"})"
+	  ],
+	  "description": "Exemplo aScan procurando na posicao 1"
+	},
+	"FWxFilial": {
+	  "prefix": "FWFWxFilial",
+	  "body": [" FWFWxFilial(\"${1:/*Alias*/}\")"],
+	  "description": "Busca FWxFilial posicionado"
+	},
+	"DbSelectArea": {
+	  "prefix": "DbSelectArea",
+	  "body": ["DbSelectArea(\"${1:/*cAlias*/}\")", "DbSetorder(${2:/*nOrden*/})"]
+	},
+	"FindFunction": {
+	  "prefix": "FindFunction",
+	  "body": ["FindFunction( ${cFunction})"],
+	  "description": "FindFunction() - Faz a busca de uma determinada função no rpo ou no binário"
+	},
+	"RpcSetEnv": {
+	  "prefix": "RpcSetEnv - Snippet",
+	  "body": ["RpcSetEnv('99','01')", "RpcClearEnv()"]
+	},
+	"fwtemporarytable": {
+	  "prefix": "fwtemporarytable - Snippet",
+	  "body": [
+		"\tLocal aFields := {}",
+		"\tLocal oTempTable",
+		"\tLocal nI",
+		"\tLocal cAlias1 :=  GetNextAlias() ",
+		"\tlocal cAlias2 :=  GetNextAlias() ",
+		"\t//Local cQuery  := \"\"",
+		"\t",
+		"\t//Criação do objeto",
+		"\toTempTable := FWTemporaryTable():New(cAlias1)",
+		"\t",
+		"\t//Monta os campos da tabela",
+		"\taadd(aFields,{\"COD\",\"C\",30,0})",
+		"\taadd(aFields,{\"DESCRI\",\"C\",50,0})",
+		"\taadd(aFields,{\"TIPO\",\"C\",3,0})",
+		"\t",
+		"\toTemptable:SetFields( aFields )",
+		"\toTempTable:AddIndex(\"indice1\", {\"COD\"} )",
+		"\toTempTable:AddIndex(\"indice2\", {\"TIPO\"} )",
+		"\t",
+		"\t//Criação da tabela",
+		"\toTempTable:Create()",
+		"\t",
+		"\t//Populando a tabela temporaria",
+		"\t",
+		"\tcAlias2 := GetNextAlias()",
+		"\t",
+		"\tBeginSql Alias cAlias2",
+		"\t\tSELECT B1_COD, B1_DESC, B1_TIPO",
+		"\t\tFROM  %Table:SB1% SB1 ",
+		"\t\tWHERE  B1_FILIAL   = %FWxFilial:SB1%",
+		"\t\tAND SB1.%NotDel%",
+		"\t\tORDER BY B1_COD",
+		"\tEndSql",
+		"\t",
+		"\tWHILE !(cAlias2)->(EOF())",
+		"\t",
+		"\tRECLOCK(cAlias1, .T. )",
+		"\t\t(cAlias1)->COD   := (CALIAS2)->B1_COD",
+		"\t\t(cAlias1)->DESCRI  := (CALIAS2)->B1_DESC",
+		"\t\t(cAlias1)->TIPO  := (CALIAS2)->B1_TIPO",
+		"\tMSUNLOCK()",
+		"\t(CALIAS2)->(DBSKIP())",
+		"\tENDDO",
+		"\t",
+		"\t//Executa a leitura da tabela",
+		"/*tcQuery := \"select * from \"+ oTempTable:GetRealName()",
+		"\tMPSysOpenQuery( cQuery, 'QRYTMP' )",
+		"\t",
+		"\tDbSelectArea('QRYTMP')",
+		"\t",
+		"\twhile !eof()",
+		"\t    for nI := 1 to fcount()",
+		"\t        varinfo(fieldname(nI),fieldget(ni))",
+		"\t    next",
+		"\t    dbskip()",
+		"\tEnddo */",
+		"\t",
+		"\tDbSelectArea(cAlias1)",
+		"\tDBGOTOP()",
+		"\tDbSetOrder(1)",
+		"\tWhile !eof()",
+		"\t\tfor nI := 1 to fcount()",
+		"\t\tvarinfo(fieldname(nI),fieldget(ni))",
+		"\tnext",
+		"\tdbskip()",
+		"\tEnddo",
+		"\t",
+		"\t//Exclui a tabela ",
+		"\toTempTable:Delete()"
+	  ],
+	  "description": "Exemplo - FwtemporaryTable"
+	},
+	"Query - Insert": {
+	  "prefix": "Query - Insert - Snippet",
+	  "body": [
+		"\tcQuerySQL := \"\" ",
+		"\tcQuerySQL += \"INSERT INTO \" + ${1:/*cTabela*/} + \" (${2:/*cCampos*/})",
+		"\tcQuerySQL += \" VALUES (${3:/*cValues...*/})",
+		"\t ",
+		"\t\tIF TCSqlExec(cQuerySQL) < 0 ",
+		"\t\t\t    ConOut(\"Erro:\", TCSqlError()) ",
+		"\t\tEndif"
+	  ]
+	},
+	"FWAlertNoYes": {
+	  "prefix": "FWAlertNoYes - Snippet",
+	  "body": [
+		"FWAlertNoYes(\"${1:/*Mensagem*/}\",\"Atenção - \"+ProcName()+cValToChar(ProcLine()))"
+	  ],
+	  "description": "FWAlertNoYes - Exemplo"
+	},
+	"FWAlertyesno": {
+	  "prefix": "FWAlertyesno - Snippet",
+	  "body": [
+		"FWAlertYesNo(\"${1:/*Mensagem*/}\",\"Atenção - \"+ProcName()+cValToChar(ProcLine()))"
+	  ],
+	  "description": "FWAlertyesno - Exemplo"
+	},
+	"FWalerterror": {
+	  "prefix": "FWalerterror - Snippet",
+	  "body": [
+		"FWalerterror(\"${1:/*Mensagem*/}\",\"Atenção - \"+ProcName()+cValToChar(ProcLine()))"
+	  ],
+	  "description": "FWalerterror - Exemplo"
+	},
+	"FWalertinfo": {
+	  "prefix": "FWalertinfo - Snippet",
+	  "body": [
+		"FWalertinfo(\"${1:/*Mensagem*/}\",\"Atenção - \"+ProcName()+cValToChar(ProcLine()))"
+	  ],
+	  "description": "FWalertinfo - Exemplo"
+	},
+	"FWAlertWarning": {
+	  "prefix": "FWAlertWarning - Snippet",
+	  "body": [
+		"FWAlertWarning(\"${1:/*Mensagem*/}\",\"Atenção - \"+ProcName()+cValToChar(ProcLine()))"
+	  ],
+	  "description": "FWAlertWarning - Exemplo"
+	},
+	"FWAlertSucess": {
+	  "prefix": "FWAlertSucess - Snippet",
+	  "body": [
+		"FWAlertSucess(\"${1:/*Mensagem*/}\",\"Atenção - \"+ProcName()+cValToChar(ProcLine()))"
+	  ],
+	  "description": "FWAlertSucess - Exemplo"
+	},
+	"FWAlertHelp": {
+	  "prefix": "FWAlertHelp - Snippet",
+	  "body": [
+		"FWAlertHelp(\"${1:/*Mensagem*/}\",\"Atenção - \"+ProcName()+cValToChar(ProcLine()))"
+	  ],
+	  "description": "FWAlertHelp - Exemplo"
+	},
+	"TCSqlExec": {
+	  "prefix": "TCSqlExec - Snippet",
+	  "body": [
+		"\tcSQLExec := \"\" ",
+		"\tcSQLExec += \"\" ",
+		"\tIf TCSqlExec(cSQLExec) < 0 ",
+		"\t	Help(NIL, NIL,ProcName(), NIL, \"O comando SQL gerou erro\"+ TCSqlError(), 1, 0, NIL, NIL, NIL, NIL, .T., {\"Verifique com o setor de TI!\"}) ",
+		"\tEndIf ",
+	  ]
+	},
+	"funcao": {
+	  "prefix": "#include",
+	  "body": ["#INCLUDE 'TOTVS.CH' "]
+	},
+	"Case": {
+	  "prefix": "Case - snippet",
+	  "body": [
+		"Do Case ",
+		"CASE ${condicao1}",
+		"\t${instrucoes1}",
+		"CASE ${condicao2}",
+		"\t${instrucoes2} ",
+		"OTHERWISE  ",
+		"\t${instrucoes3} ",
+		"End Case "
+	  ]
+	},
+	"Sql_string": {
+	  "prefix": ["sql"],
+	  "body": ["_cSql += \" ${TM_SELECTED_TEXT} \"+CRLF"],
+	  "description": "Encapsula o texto selecionado no formato de string"
+	},
+	"delete_string": {
+	  "prefix": ["delete"],
+	  "body": ["${1|D_E_L_E_T_<>'*',%NOTDEL%|}"],
+	  "description": "insere a retirada do deleted no sql para protheus"
+	},
+	"dbseekcomif": {
+	  "prefix": ["dbseek com if - snippet"],
+	  "body": [
+		"${1:tabela}->(dbSetOrder(1))",
+		"If ${1:tabela}->(dbSeek(FWxFilial(\"${1:tabela}\")+$0))",
+		"EndIf"
+	  ],
+	  "description": "Insere dbselectarea com if do seek"
+	},
+	"dbseek": {
+		"prefix": ["dbseek - snippet"],
+		"body": [
+		  "${1:tabela}->(dbSetOrder(1))",
+		  "${1:tabela}->(dbSeek(FWxFilial(\"${1:tabela}\")+$0))",
+		],
+		"description": "Insere dbselectarea com if do seek"
+	  },
+	  "msseek": {
+		"prefix": ["msseek - snippet"],
+		"body": [
+		  "${1:tabela}->(dbSetOrder(1))",
+		  "${1:tabela}->(msseek(FWxFilial(\"${1:tabela}\")+$0))",
+		],
+		"description": "Insere dbselectarea com if do seek"
+	  },
+	"FwMsgRun": {
+	  "prefix": ["FwMsgRun"],
+	  "body": [
+		"/* para mudar descricao da tela se usa oSay:cCaption := \"\" dentro da funcao a ser executada ",
+		"ProcessMessage() -> forÃ§a a atualizaÃ§Ã£o da messgem da tela cCaption  */",
+		"FWMsgRun( /* Obj_tela */ , {|oSay| ${1:Funcao_a_ser_executada} } , ${2:Titulo} , ${3:Mensagem} )"
+	  ],
+	  "description": "FwMsgRun"
+	},
+	"RecLock": {
+	  "prefix": ["RecLock - snippet"],
+	  "body": [
+		"RecLock(\"${1:Tabela}\" ,  .F. )",
+		"${1:Tabela}->$0",
+		"${1:Tabela}->(MsUnlock())"
+	  ],
+	  "description": "cl_ Insere reclock"
+	},
+	"MemoWrite": {
+	  "prefix": ["MemoWrite"],
+	  "body": [
+		"MemoWrite(\"D:\\logsql\\\"+FunName()+\"_\"+ProcName()+\".txt\", GetLastQuery()[2])"
+	  ],
+	  "description": "Insert memowrite logsql getlastquery"
+	},
+	"Aviso_varinfo": {
+	  "prefix": ["Aviso", "VarInfo"],
+	  "body": [
+		"Aviso( 'VarInfo', VarInfo('${1:variavel}', ${1:variavel} , , .F. ) ,{'ok'} ,4,,,, .T.)$0"
+	  ],
+	  "description": "Insert aviso com varinfo"
+	},
+	"Posicione": {
+	  "prefix": ["Posicione snippet"],
+	  "body": [
+		"Posicione(\"${1:tabela}\", 1, FWxFilial(\"${1:tabela}\")+${2:chave}, \"${3:retorno}\")$0"
+	  ],
+	  "description": "Insert aviso com varinfo"
+	},
+	"FwFldGet - Tkz": {
+	  "prefix": ["FWFldGet"],
+	  "body": ["FWFldGet(\"${1:cCampo}\")"],
+	  "description": "FWFldGet(<cCampo >, [ nLinha ], [ oModel ], [ lShowMsg ])"
+	},
+	"FWFldPut - TKZ": {
+	  "prefix": ["FWFldPut"],
+	  "body": ["FWFldPut(\"${1:cCampo}\",\"${2:xConteudo}\")"],
+	  "description": "FWFldPut(<cCampo >, <xConteudo >, [ nLinha ], [ oModel ], [ lShowMsg ], [ lLoad ])"
+	},
+	"Supergetmv": {
+	  "prefix": ["Supergetmv"],
+	  "body": ["SuperGetMV(\"${1:MV_XXXXXX}\",${2:.F.},${3:\" \"})"],
+	  "description": "SUPERGETMV( <nome do parâmetro>, <lHelp>, <cPadrão>, <Filial do sistema> )"
+	},
+	"JsonObject()": {
+	  "prefix": ["JsonObject()"],
+	  "body": ["JsonObject():New()"],
+	  "description": "Cria uma nova instância do objeto, da classe JsonObject, que representa um objeto JSON."
+	},
+	"PADR()": {
+	  "prefix": ["PADR()"],
+	  "body": [
+		"PADR(${1:CAMPO/VAR},GETSX3CACHE(\"${2:CAMPO REFERENCIA}\",\"X3_TAMANHO\"),'' )"
+	  ],
+	  "description": "Ajusta campo conforme tamanho."
+	},
+	"aArea": {
+	  "prefix": ["aArea - snippet"],
+	  "body": [
+		"Local aAreas := { Getarea(), XXX->(GetArea())}",
+		"AEval(aAreas,{|x,y| RestArea(x) })"
+	  ],
+	  "description": "Guardar varias areas."
+	},
+	"MsgYesNo": {
+	  "prefix": ["MSGYESNO( 'cTexto', 'cTitulo' )"],
+	  "body": ["MSGYESNO( 'cTexto', 'cTitulo' )"],
+	  "description": "Guardar varias areas."
+	},
+	"GetSx3Cache": {
+	  "prefix": ["GetSx3Cache - snippet"],
+	  "body": ["GetSx3Cache(\"${1:CAMPO}\" ,  \"X3_TAMANHO\" )"],
+	  "description": "GetSx3Cache snippet"
+	},
+	"MPSysExecScalar - snippet ": {
+	  "prefix": "MPSysExecScalar - snippet",
+	  "body": [
+		"Local cQuery as character ",
+		"Local nCount as numeric ",
+		"cQuery := \" SELECT COUNT(R_E_C_N_O_) NREC FROM \" + RetSqlName(\"SA1\") + \" WHERE D_E_L_E_T_ = ' ' \" ",
+		"nCount := MpSysExecScalar(cQuery,\"NREC\") ",
+		"Conout(\"Tabela possui \" + cValToChar(nCount) + \" registros\") "
+	  ]
+	},
+	"MPSysExecScalar - snippet - Bindparam ": {
+	  "prefix": "MPSysExecScalar - Bindparam",
+	  "body": [
+		" Local cQuery        as character",
+		" Local nVal          as numeric",
+		" Local aBindParam    as array",
+		" cQuery := \"SELECT COUNT(*) CNT FROM SE1T10 WHERE E1_FABOV = ? AND  D_E_L_E_T_ = ? \" ",
+		" aBindParam := {'123', ' '} ",
+		" nVal := MPSysExecScalar(cQuery,'CNT',aBindParam)"
+	  ]
+	},
+	"count advpl - snippet ": {
+	  "prefix": "count advpl - snippet",
+	  "body": ["Local nCount as numeric ", "COUNT TO ncount ", "DbGoTop()"]
+	}
+  }
+  
