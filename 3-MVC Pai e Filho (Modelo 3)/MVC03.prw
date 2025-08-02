@@ -64,8 +64,8 @@ Static Function ModelDef()
 	oModel:GetModel( 'Z01DETAILS' ):SetDescription( 'Observacoes do usuario ' )
 
 	aReal := {}
-	aadd(aReal, {"Z00_FILIAL","Z01_FILIAL"})
-	aadd(aReal, {"Z00_ID","Z01_IDZ00"})
+	aadd(aReal, {"Z01_FILIAL","Z00_FILIAL"})
+	aadd(aReal, {"Z01_IDZ00","Z00_ID"})
 
 	oModel:SetRelation("Z01DETAILS",aReal,Z01->(IndexKey(1)))
 	// oModel:GetModel("Z01DETAILS"):SetOnlyQuery(.T.)

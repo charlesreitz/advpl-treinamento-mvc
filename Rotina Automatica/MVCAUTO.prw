@@ -16,16 +16,21 @@ User Function MVCAUTO()
 
 		oModel := FWLoadMOdel("MVC01")
 		oModel:SetOperation(nOperacao)
-		
+
 		If !oModel:Activate()
 			Break
 		Endif
 
-		oModelZ00 := oModel:GetModel("Z00MASTER")
+		oModelZ00 := oModel:GetModel("Z01MASTER")
 
-		If !oModelZ00:SetValue("Z00_NOME","CHARLES REITZ")
+		If !oModelZ00:SetValue("Z01_USUARI",REPLICATE(RANDOM(1,10000),10))
 			Break
 		Endif
+
+		If !oModelZ00:SetValue("Z01_NOME",REPLICATE(RANDOM(1,10000),10))
+			Break
+		Endif
+
 
 		If !oModel:VldData()
 			Break
@@ -74,5 +79,4 @@ User Function MVCAUTO()
 	oModel := nil
 	FreeObj(oModel)
 
-	// FWalerterror("Erro ao gravar registro "+cMessage,"Atenção - "+ProcName()+cValToChar(ProcLine()))
 Return lReturn
