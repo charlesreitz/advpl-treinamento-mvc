@@ -1,16 +1,14 @@
 #Include 'Protheus.ch'
 #Include 'FWMVCDEF.ch'
 
-
-//Modelo 3 (2 Tabelas diferentes cabeçalho/ítens)
 User Function MVC03()
 	Local oBrowse
 
 	oBrowse := FWMBrowse():New()
-	oBrowse:SetAlias('Z01')
+	oBrowse:SetAlias('Z00')
 	oBrowse:SetDescription('Cadastro de Usuários e Observacoes')
-	// oBrowse:AddLegend( "Z01_ADM", "GREEN", "Administrador" )
-	// oBrowse:AddLegend( "!Z01_ADM", "YELLOW", "Usuário" )
+	oBrowse:AddLegend( "Z00_ADM", "GREEN", "Administrador" )
+	oBrowse:AddLegend( "!Z00_ADM", "YELLOW", "Usuário" )
 	oBrowse:SetMenuDef( 'MVC03' )
 	oBrowse:Activate()
 
@@ -30,15 +28,15 @@ Static Function MenuDef()
 Return aRotina
 Static Function ModelDef()
 	Local oModel
+	Local oStruZ00 := FWFormStruct(1,"Z00")
 	Local oStruZ01 := FWFormStruct(1,"Z01")
-	Local oStruZ02 := FWFormStruct(1,"Z02")
 
-	// oStruZ01:RemoveField( 'Z01_OBS' )
-	// oStruZ01:SetProperty("Z01_OBS"		, MODEL_FIELD_TITULO, "COISA LINDA ")
-	// oStruZ01:SetProperty("Z01_OBS"		, MODEL_FIELD_OBRIGAT, .T.)
-	// oStruZ01:SetProperty("Z01_OBS"		, MODEL_FIELD_WHEN, .T.)
+	// oStruZ00:RemoveField( 'Z00_OBS' )
+	// oStruZ00:SetProperty("Z00_OBS"		, MODEL_FIELD_TITULO, "COISA LINDA ")
+	// oStruZ00:SetProperty("Z00_OBS"		, MODEL_FIELD_OBRIGAT, .T.)
+	// oStruZ00:SetProperty("Z00_OBS"		, MODEL_FIELD_WHEN, .T.)
 
-	// oStruZ01:AddField( ;                      // Ord. Tipo Desc.
+	// oStruZ00:AddField( ;                      // Ord. Tipo Desc.
 	// "Valor Alimentação"        , ;      // [01]  C   Titulo do campo
 	// "Valor da despesa de alimentação para integrar com o gestão de despesa"     , ;      // [02]  C   ToolTip do campo
 	// 'DVAL_ALIME'                     , ;      // [03]  C   Id do Field
@@ -54,50 +52,53 @@ Static Function ModelDef()
 	// NIL                              , ;      // [13]  L   Indica se o campo pode receber valor em uma operação de update.
 	// .T.                              )        // [14]  L   Indica se o campo é virtual
 
-	oModel := MPFormModel():New("MVC03_MASTER")
+	oModel := FWFormModel():New("U_MVC03" )
 
 	oModel:SetDescription("Cadastro de Usuários")
 
-	oModel:addFields('Z01MASTER', /*cOwner*/, oStruZ01)
-	oModel:getModel('Z01MASTER'):SetDescription('Cadastro de Usuários master')
-	oModel:getModel('Z01MASTER'):SetPrimaryKey( { "Z01_FILIAL", "Z01_ID" } )
-	oModel:AddGrid( 'Z02DETAILS','Z01MASTER', oStruZ02)
+	oModel:addFields('Z00MASTER', /*cOwner*/, oStruZ00)
+	oModel:getModel('Z00MASTER'):SetDescription('Cadastro de Usuários master')
+	oModel:getModel('Z00MASTER'):SetPrimaryKey( { "Z00_FILIAL", "Z00_ID" } )
+
+	oModel:AddGrid( 'Z01DETAILS','Z00MASTER', oStruZ01)
+	oModel:GetModel( 'Z01DETAILS' ):SetDescription( 'Observacoes do usuario ' )
+
+	aReal := {}
+	aadd(aReal, {"Z01_FILIAL","Z00_FILIAL"})
+	aadd(aReal, {"Z01_IDZ00","Z00_ID"})
+
+	oModel:SetRelation("Z01DETAILS",aReal,Z01->(IndexKey(1)))
+	// oModel:GetModel("Z01DETAILS"):SetOnlyQuery(.T.)
+	// // oModel:GetModel("Z01DETAILS"):SetOnlyView(.T.)
+	// // oModel:GetModel("Z01DETAILS"):SetNoUpdateLine(.T.)
+	// oModel:GetModel("Z01DETAILS"):SetNoInsertLine(.T.)
+	// oModel:GetModel("Z01DETAILS"):SetNoDeleteLine(.T.)
+	oModel:GetModel('Z01DETAILS'):SetOptional(.T.)
 
 
-	oModel:SetRelation("Z02DETAILS", {{"Z02_FILIAL", "FwXFilial('Z02')"}, {"Z02_IDZ01", "Z01_ID"}}, Z02->(IndexKey( 1 )))
-	oModel:GetModel( 'Z02DETAILS' ):SetDescription( 'Observacoes do usuario ' )
-	// oModel:GetModel('Z02DETAILS'):SetOptional(.T.)
-
-	// oModel:GetModel("Z02DETAILS"):SetOnlyQuery(.T.)
-	// // oModel:GetModel("Z02DETAILS"):SetOnlyView(.T.)
-	// // oModel:GetModel("Z02DETAILS"):SetNoUpdateLine(.T.)
-	// oModel:GetModel("Z02DETAILS"):SetNoInsertLine(.T.)
-	// oModel:GetModel("Z02DETAILS"):SetNoDeleteLine(.T.)
 
 Return oModel
 Static Function ViewDef()
 	Local oModel := ModelDef() //fWLoadMOdel("MVC03")
 	Local oView
+	Local oStrZ00:= FWFormStruct(2, 'Z00')
 	Local oStrZ01:= FWFormStruct(2, 'Z01')
-	Local oStrZ02:= FWFormStruct(2, 'Z02')
 
-	// oStrZ01:SetProperty( '*' , MVC_VIEW_GROUP_NUMBER, 'GRUPO01' )
+	// oStrZ00:SetProperty( '*' , MVC_VIEW_GROUP_NUMBER, 'GRUPO01' )
 
 	oView := FWFormView():New()
 	oView:SetModel(oModel)
-	oView:AddField('FORM_Z01' , oStrZ01,'Z01MASTER' )
-	oView:AddGrid(  'GRID_Z02', oStrZ02, 'Z02DETAILS' )
+	oView:AddField('FORM_Z00' , oStrZ00,'Z00MASTER' )
+	oView:AddGrid(  'GRID_Z01', oStrZ01, 'Z01DETAILS' )
 
 	// oView:SetNoDeleteLine('VIEW_IB1')
 	// oView:CanDeleteLine('VIEW_IB1')
 	// oView:SetNoInsertLine('VIEW_IB1')
 	// oView:CanUpdateLine('VIEW_IB1')
 
-	oView:AddIncrementField('GRID_Z02', 'Z02_SEQ')
-
 	oView:CreateHorizontalBox( 'SUPERIOR'   , 40 )
 	oView:CreateHorizontalBox( 'INFERIOR', 60 )
 
-	oView:SetOwnerView('FORM_Z01','SUPERIOR')
-	oView:SetOwnerView('GRID_Z02','INFERIOR')
+	oView:SetOwnerView('FORM_Z00','SUPERIOR')
+	oView:SetOwnerView('GRID_Z01','INFERIOR')
 Return oView
